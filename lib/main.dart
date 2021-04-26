@@ -6,105 +6,78 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Welcome to Flutter',
-        theme: ThemeData(
-          primaryColor: Colors.white,
-        ),
-        home: RandomWords());
+      title: 'Flutter Demo',
+      home: MyHomePage(),
+    );
   }
 }
 
-class RandomWords extends StatefulWidget {
-  @override
-  _RandomWordsState createState() => _RandomWordsState();
-}
-
-class _RandomWordsState extends State<RandomWords> {
-  final _suggestions = <String>[];
-  final _saved = <String>{}; // NEW
-  final _biggerFont = TextStyle(fontSize: 18.0);
-
+class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
+      drawerScrimColor: Color(0x70ffffff),
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text('Startup Name Generator'),
-        actions: [
-          IconButton(icon: Icon(Icons.list), onPressed: _pushSaved),
-        ],
+        backgroundColor: Colors.transparent,
+        iconTheme: IconThemeData(color: Color(0xffbdbdbd)),
+        elevation: 0.0,
+        centerTitle: true,
+        title: Text('2021.04', style: TextStyle(color: Color(0xffbdbdbd))),
       ),
-      body: _buildSuggestions(),
-    );
-  }
-
-  void _pushSaved() {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (BuildContext context) {
-          final tiles = _saved.map(
-            (String pair) {
-              return ListTile(
-                title: Text(
-                  pair,
-                  style: _biggerFont,
-                ),
-              );
-            },
-          );
-          final divided = ListTile.divideTiles(
-            context: context,
-            tiles: tiles,
-          ).toList();
-
-          return Scaffold(
-            appBar: AppBar(
-              title: Text('Saved Suggestions'),
+      drawer: NavDrawer(),
+      drawerEdgeDragWidth: MediaQuery.of(context).size.width,
+      body: ListView.builder(
+        padding: const EdgeInsets.all(0),
+        itemBuilder: (BuildContext context, int index) {
+          if (index == 0) {
+            return Container(
+              height: 320,
+              padding: EdgeInsets.only(bottom: 8),
+              child: Image(image: AssetImage('assets/home.jpg')),
+            );
+          }
+          return Container(
+            color: Colors.black,
+            height: 100,
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              margin: EdgeInsets.only(top: 8, bottom: 8, left: 12, right: 12),
+              color: Color(0xff191919),
+              child: Text(
+                '$index',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
-            body: ListView(children: divided),
           );
         },
       ),
     );
   }
+}
 
-  Widget _buildRow(String pair) {
-    final alreadySaved = _saved.contains(pair);
-    return ListTile(
-      title: Text(
-        pair,
-        style: _biggerFont,
+class NavDrawer extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: Ink(
+        color: Color(0xff1a1a1a),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            ListTile(
+              leading: Icon(Icons.verified_user),
+              title: Text(
+                '我的账本',
+                style: TextStyle(color: Color(0xffbdbdbd)),
+              ),
+              onTap: () => {Navigator.of(context).pop()},
+            ),
+          ],
+        ),
       ),
-      trailing: Icon(
-        // NEW from here...
-        alreadySaved ? Icons.favorite : Icons.favorite_border,
-        color: alreadySaved ? Colors.red : null,
-      ),
-      onTap: () {
-        // NEW lines from here...
-        setState(() {
-          if (alreadySaved) {
-            _saved.remove(pair);
-          } else {
-            _saved.add(pair);
-          }
-        });
-      },
     );
-  }
-
-  Widget _buildSuggestions() {
-    return ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemBuilder: (BuildContext _context, int i) {
-          if (i.isOdd) {
-            return Divider();
-          }
-
-          final int index = i ~/ 2;
-          if (index >= _suggestions.length) {
-            _suggestions.add("Hello World $i!");
-          }
-          return _buildRow(_suggestions[index]);
-        });
   }
 }
