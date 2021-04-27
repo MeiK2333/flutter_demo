@@ -1,12 +1,15 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/data/bill.dart';
+import 'package:flutter_app/pages/booking.dart';
 import 'package:flutter_app/pages/home_card_item.dart';
+import 'package:flutter_app/utils.dart';
 
 class MyHomeCard extends StatefulWidget {
-  final DateTime date;
+  final MapEntry<String, List<BillItem>> data;
 
-  const MyHomeCard(this.date);
+  const MyHomeCard(this.data);
 
   @override
   _MyHomeCard createState() => _MyHomeCard();
@@ -14,21 +17,6 @@ class MyHomeCard extends StatefulWidget {
 
 class _MyHomeCard extends State<MyHomeCard> {
   final rng = new Random();
-
-  dateFmt() {
-    final dayOfWeek = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
-    var day = widget.date.day;
-    var dayFmt = dayOfWeek[widget.date.weekday - 1];
-    var now = DateTime.now();
-    if (day == now.day) {
-      dayFmt = '今天';
-    } else if (day == now.day - 1) {
-      dayFmt = '昨天';
-    } else if (day == now.day - 2) {
-      dayFmt = '前天';
-    }
-    return "${widget.date.month.toString().padLeft(2, '0')}.${widget.date.day.toString().padLeft(2, '0')} $dayFmt";
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,33 +27,49 @@ class _MyHomeCard extends State<MyHomeCard> {
         margin: EdgeInsets.only(top: 8, bottom: 8, left: 12, right: 12),
         color: Color(0xff191919),
         child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top: 8, bottom: 8, left: 14, right: 14),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    dateFmt(),
-                    style: TextStyle(
-                      color: Color(0xffbdbdbd),
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+          children: <Widget>[
+                InkWell(
+                  onTap: () {
+                    // 指定日期记账
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              Booking(date: widget.data.value[0].date)),
+                    );
+                  },
+                  focusColor: Color(0xff171717),
+                  highlightColor: Color(0xff171717),
+                  hoverColor: Color(0xff171717),
+                  splashColor: Color(0xff171717),
+                  child: Padding(
+                    padding:
+                        EdgeInsets.only(top: 8, bottom: 8, left: 14, right: 14),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          widget.data.value[0].dateFmt(),
+                          style: TextStyle(
+                            color: Color(0xffbdbdbd),
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          "支: ${Utils.billsAmountSum(widget.data.value)}",
+                          style: TextStyle(
+                            color: Color(0xffbdbdbd),
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Text(
-                    "支: 888.88",
-                    style: TextStyle(
-                      color: Color(0xffbdbdbd),
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            MyHomeCardItem("三餐", rng.nextInt(100) + rng.nextDouble()),
-          ],
+                ),
+              ] +
+              widget.data.value.map<Widget>((e) => MyHomeCardItem(e)).toList(),
         ),
       ),
     );
