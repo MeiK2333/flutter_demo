@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/data/category.dart';
 import 'package:flutter_app/data/icons.dart';
+import 'package:flutter_app/pages/number_text.dart';
 import 'package:flutter_app/utils.dart';
 
 class Booking extends StatefulWidget {
@@ -14,6 +15,9 @@ class Booking extends StatefulWidget {
 
 class _Booking extends State<Booking> {
   int selected = -1;
+  double value = 0;
+  final NumberTextController controller = NumberTextController();
+  NumberText numberText = NumberText();
 
   @override
   void initState() {
@@ -86,32 +90,8 @@ class _Booking extends State<Booking> {
               ),
             ),
           ),
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: "0",
-                  style: TextStyle(
-                    color: Color(0xffb85855),
-                    fontSize: 22,
-                  ),
-                ),
-                TextSpan(
-                  text: ".",
-                  style: TextStyle(
-                    color: Color(0xffb85855),
-                    fontSize: 18,
-                  ),
-                ),
-                TextSpan(
-                  text: "0",
-                  style: TextStyle(
-                    color: Color(0xffb85855),
-                    fontSize: 18,
-                  ),
-                ),
-              ],
-            ),
+          NumberText(
+            controller: controller,
           ),
         ],
       ),
@@ -147,7 +127,9 @@ class _Booking extends State<Booking> {
 
   Widget _numberInputItem(String item) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        controller.setValue(item);
+      },
       child: Container(
         alignment: Alignment.center,
         width: MediaQuery.of(context).size.width / 4,
