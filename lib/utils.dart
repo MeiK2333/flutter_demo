@@ -5,6 +5,10 @@ class Utils {
     return '${date.year}.${date.month.toString().padLeft(2, '0')}';
   }
 
+  static String monthDayFmt(DateTime date) {
+    return '${date.month.toString().padLeft(2, '0')}.${date.day.toString().padLeft(2, '0')}';
+  }
+
   static String billsAmountSum(List<BillItem> billItems) {
     final double amount = billItems.fold(
         0, (previousValue, element) => previousValue + element.amount);
