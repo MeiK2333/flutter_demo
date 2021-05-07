@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_app/data/bill.dart';
 import 'package:flutter_app/pages/booking.dart';
@@ -16,8 +14,6 @@ class MyHomeCard extends StatefulWidget {
 }
 
 class _MyHomeCard extends State<MyHomeCard> {
-  final rng = new Random();
-
   @override
   Widget build(BuildContext context) {
     return Container(

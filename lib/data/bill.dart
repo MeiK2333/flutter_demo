@@ -1,7 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/data/db.dart';
 import 'package:sqflite/sqflite.dart';
 
 final dayOfWeek = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+
+final billListen = ValueNotifier(0);
 
 class Bill {
   const Bill();

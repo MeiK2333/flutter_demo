@@ -41,6 +41,11 @@ class _MyHomePage extends State<MyHomePage>
 
     super.initState();
 
+    setBills();
+    billListen.addListener(setBills);
+  }
+
+  setBills() {
     Bill.loadMonthBills(Utils.yearMonthFmt(date)).then((value) {
       setState(() {
         billItems = Bill.billsGroupByDays(value);
@@ -52,6 +57,7 @@ class _MyHomePage extends State<MyHomePage>
   void dispose() {
     _scrollController.dispose();
     _hideFabAnimController.dispose();
+    billListen.removeListener(setBills);
     super.dispose();
   }
 

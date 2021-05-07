@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/data/bill.dart';
 import 'package:flutter_app/data/category.dart';
 import 'package:flutter_app/data/icons.dart';
 import 'package:flutter_app/pages/number_text.dart';
@@ -17,6 +18,7 @@ class _Booking extends State<Booking> {
   int selected = -1;
   double value = 0;
   final NumberTextController controller = NumberTextController();
+  final TextEditingController textEditingController = TextEditingController();
   NumberText numberText = NumberText();
 
   @override
@@ -81,6 +83,7 @@ class _Booking extends State<Booking> {
         children: [
           Flexible(
             child: TextField(
+              controller: textEditingController,
               style: TextStyle(
                 color: Color(0xff3275c8),
               ),
@@ -125,35 +128,70 @@ class _Booking extends State<Booking> {
     );
   }
 
-  Widget _numberInputItem(String item) {
+  Widget _numberInput(Widget widget, String operator) {
     return InkWell(
       onTap: () {
-        controller.setValue(item);
+        controller.setValue(operator);
       },
       child: Container(
         alignment: Alignment.center,
-        width: MediaQuery.of(context).size.width / 4,
+        child: widget,
         height: 50,
-        child: Text(
-          "$item",
+        width: MediaQuery.of(context).size.width / 4,
+      ),
+    );
+  }
+
+  Widget _numberInputNum(String num) {
+    return _numberInput(
+        Text(
+          "$num",
           style: TextStyle(
             fontSize: 18,
             color: Color(0xffbebebe),
           ),
         ),
-      ),
-    );
+        num);
   }
 
   Widget _numberInputItemText(String item) {
     return InkWell(
-      onTap: () {},
+      onTap: () async {
+        var val = controller.getValue();
+        if (val <= 0) {
+          // TODO: 提示
+          return;
+        }
+        Category category;
+        expenditureCategory.forEach((element) {
+          if (element.id == selected) {
+            category = element;
+          }
+        });
+        if (category == null) {
+          return;
+        }
+        BillItem billItem = BillItem(
+          date: widget.date,
+          name: category.name,
+          amount: val,
+          remark: textEditingController.text,
+        );
+        await Bill.insertBill(billItem);
+        billListen.value++;
+        print('${billListen.value}');
+        Navigator.pop(context);
+        if (item == '再记') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => Booking(date: DateTime.now())),
+          );
+        }
+      },
       child: Container(
         alignment: Alignment.center,
-        width: item == '保存'
-            ? MediaQuery.of(context).size.width -
-                MediaQuery.of(context).size.width / 4 * 3
-            : MediaQuery.of(context).size.width / 4,
+        width: MediaQuery.of(context).size.width / 4,
         height: 50,
         color: item == '保存' ? Color(0xffb85855) : null,
         child: Text(
@@ -167,20 +205,14 @@ class _Booking extends State<Booking> {
     );
   }
 
-  Widget _numberInputItemIcon(IconData iconData) {
-    return InkWell(
-      onTap: () {},
-      child: Container(
-        width: MediaQuery.of(context).size.width -
-            MediaQuery.of(context).size.width / 4 * 3,
-        height: 50,
-        child: Icon(
+  Widget _numberInputItemIcon(IconData iconData, String operator) {
+    return _numberInput(
+        Icon(
           iconData,
           size: 18,
           color: Color(0xffaaaaaa),
         ),
-      ),
-    );
+        operator);
   }
 
   /// 最底下那个数字输入控件
@@ -190,33 +222,33 @@ class _Booking extends State<Booking> {
         Row(
           children: [
             // TODO: 优化重复部分，添加点击事件
-            _numberInputItem('1'),
-            _numberInputItem('2'),
-            _numberInputItem('3'),
-            _numberInputItemIcon(Icons.backspace),
+            _numberInputNum('1'),
+            _numberInputNum('2'),
+            _numberInputNum('3'),
+            _numberInputItemIcon(Icons.backspace, '<'),
           ],
         ),
         Row(
           children: [
-            _numberInputItem('4'),
-            _numberInputItem('5'),
-            _numberInputItem('6'),
-            _numberInputItemIcon(Icons.remove),
+            _numberInputNum('4'),
+            _numberInputNum('5'),
+            _numberInputNum('6'),
+            _numberInputItemIcon(Icons.remove, '-'),
           ],
         ),
         Row(
           children: [
-            _numberInputItem('7'),
-            _numberInputItem('8'),
-            _numberInputItem('9'),
-            _numberInputItemIcon(Icons.add),
+            _numberInputNum('7'),
+            _numberInputNum('8'),
+            _numberInputNum('9'),
+            _numberInputItemIcon(Icons.add, '+'),
           ],
         ),
         Row(
           children: [
             _numberInputItemText('再记'),
-            _numberInputItem('0'),
-            _numberInputItem('.'),
+            _numberInputNum('0'),
+            _numberInputNum('.'),
             _numberInputItemText('保存'),
           ],
         ),

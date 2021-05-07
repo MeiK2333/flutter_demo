@@ -29,6 +29,7 @@ dependencies:
   sqflite:
   path:
   flutter_hooks: ^0.7.0
+  math_expressions: ^2.1.1
 
 dev_dependencies:
   flutter_test:
